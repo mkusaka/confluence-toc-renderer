@@ -125,8 +125,11 @@ describe("renderToc", () => {
     const printableWrapper = document.querySelector<HTMLElement>(
       '[data-testid="printable-wrapper"]',
     );
+    const pageRoot = document.querySelector<HTMLElement>(
+      '[data-testid="renderer-document"]',
+    );
 
-    expect(toc?.previousElementSibling?.textContent).toBe("Verification page");
+    expect(pageRoot?.firstElementChild).toBe(toc);
     expect(printableWrapper?.title).toBe("Macro (toc)");
     expect(printableWrapper?.dataset.macroBody).toBe("true");
     expect(macro?.dataset.macroName).toBe("toc");

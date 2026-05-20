@@ -494,25 +494,7 @@ function createTocItemBody(entry: TocEntry): HTMLSpanElement {
 }
 
 function insertToc(toc: HTMLElement, pageRoot: HTMLElement): void {
-  const titleHeading = findTitleHeading();
-  const insertionTarget = titleHeading ?? findFirstVisibleChild(pageRoot);
-
-  if (insertionTarget?.parentElement) {
-    insertionTarget.after(toc);
-    return;
-  }
-
   pageRoot.prepend(toc);
-}
-
-function findFirstVisibleChild(root: HTMLElement): HTMLElement | null {
-  for (const child of root.children) {
-    if (child instanceof HTMLElement && child.offsetParent !== null) {
-      return child;
-    }
-  }
-
-  return null;
 }
 
 function scrollToHeading(event: MouseEvent, id: string): void {
