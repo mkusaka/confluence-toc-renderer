@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { collectTocEntries, renderToc } from "./content";
+import { collectTocEntries, observePageChanges, renderToc } from "./content";
 import { DEFAULT_RENDER_OPTIONS, type RenderOptions } from "./settings";
 
 const SAMPLE_PAGE_HTML = `
@@ -41,6 +41,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   vi.unstubAllGlobals();
 });
 
@@ -191,5 +192,29 @@ describe("renderToc", () => {
     renderToc(document, OPTIONS);
 
     expect(document.querySelector("[data-confluence-toc-renderer]")).toBeNull();
+  });
+});
+
+describe("observePageChanges", () => {
+  it("debounces page changes before rendering", async () => {
+    vi.useFakeTimers();
+
+    const observer = observePageChanges();
+    document
+      .querySelector('[data-testid="renderer-document"]')
+      ?.append(document.createElement("p"));
+    await Promise.resolve();
+
+    expect(document.querySelector("[data-confluence-toc-renderer]")).toBeNull();
+
+    await vi.advanceTimersByTimeAsync(249);
+    expect(document.querySelector("[data-confluence-toc-renderer]")).toBeNull();
+
+    await vi.advanceTimersByTimeAsync(1);
+    expect(
+      document.querySelector("[data-confluence-toc-renderer]"),
+    ).not.toBeNull();
+
+    observer?.disconnect();
   });
 });

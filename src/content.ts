@@ -177,14 +177,18 @@ async function startAsync(): Promise<void> {
     currentOptions = DEFAULT_RENDER_OPTIONS;
   }
 
-  renderToc();
   observePageChanges();
   observeOptionChanges();
+  scheduleRender();
 }
 
 function scheduleRender(): void {
-  window.clearTimeout(scanTimer);
+  if (scanTimer !== undefined) {
+    window.clearTimeout(scanTimer);
+  }
+
   scanTimer = window.setTimeout(() => {
+    scanTimer = undefined;
     renderToc();
   }, SCAN_DEBOUNCE_MS);
 }
