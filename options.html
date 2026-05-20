@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confluence TOC Renderer Options</title>
+  </head>
+  <body>
+    <main class="options-shell">
+      <header class="options-header">
+        <h1>Confluence TOC Renderer</h1>
+      </header>
+
+      <form id="toc-options-form" class="options-panel">
+        <fieldset>
+          <legend>Heading levels</legend>
+          <div class="field-grid">
+            <label for="min-level">
+              <span>Minimum</span>
+              <select id="min-level" name="minLevel"></select>
+            </label>
+            <label for="max-level">
+              <span>Maximum</span>
+              <select id="max-level" name="maxLevel"></select>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Structure</legend>
+          <div class="segmented-control">
+            <label>
+              <input type="radio" name="type" value="list" />
+              <span>List</span>
+            </label>
+            <label>
+              <input type="radio" name="type" value="flat" />
+              <span>Flat</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Outline</legend>
+          <label class="toggle-row" for="outline">
+            <input id="outline" type="checkbox" name="outline" />
+            <span>Numbered outline</span>
+          </label>
+        </fieldset>
+
+        <div class="actions">
+          <button id="reset" type="button">Reset</button>
+          <output id="status" aria-live="polite"></output>
+        </div>
+      </form>
+    </main>
+
+    <script type="module" src="/src/options.ts"></script>
+  </body>
+</html>

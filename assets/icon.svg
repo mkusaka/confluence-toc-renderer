@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Confluence TOC Renderer icon">
+  <rect width="128" height="128" rx="28" fill="#0c66e4"/>
+  <rect x="22" y="22" width="84" height="84" rx="12" fill="#ffffff"/>
+  <path d="M40 43h48M40 64h38M40 85h28" fill="none" stroke="#172b4d" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="27" cy="43" r="5" fill="#ffab00"/>
+  <circle cx="27" cy="64" r="5" fill="#36b37e"/>
+  <circle cx="27" cy="85" r="5" fill="#6554c0"/>
+</svg>
