@@ -155,6 +155,68 @@ describe("renderToc", () => {
     });
   });
 
+  it("renders skipped heading levels as siblings under the nearest heading parent", () => {
+    document.body.innerHTML = `
+      <main>
+        <h1><span data-testid="title-text">Verification page</span></h1>
+        <div data-testid="renderer-document" class="ak-renderer-document">
+          <section class="confluence-autolinks" data-confluence-autolinks="true">
+            <div class="confluence-autolinks__header">
+              <h1>Related links</h1>
+            </div>
+            <section class="confluence-autolinks__section">
+              <h3>Backlinks (5)</h3>
+            </section>
+            <section class="confluence-autolinks__section">
+              <h3>Child items depth 2 (0)</h3>
+            </section>
+          </section>
+        </div>
+      </main>
+    `;
+
+    expect(collectTocEntries(document, DEFAULT_RENDER_OPTIONS)).toEqual([
+      { depth: 0, id: "Related-links", outline: "1", text: "Related links" },
+      {
+        depth: 2,
+        id: "Backlinks-(5)",
+        outline: "1.1.1",
+        text: "Backlinks (5)",
+      },
+      {
+        depth: 2,
+        id: "Child-items-depth-2-(0)",
+        outline: "1.1.2",
+        text: "Child items depth 2 (0)",
+      },
+    ]);
+
+    renderToc(document, {
+      ...DEFAULT_RENDER_OPTIONS,
+      outline: true,
+      type: "list",
+    });
+
+    const relatedItem = document
+      .querySelector<HTMLElement>('.toc-item-body[data-outline="1"]')
+      ?.closest('[data-testid="list-style-toc-item-container"]');
+    const relatedChildOutlines = Array.from(
+      relatedItem?.querySelector(":scope > ul")?.children ?? [],
+    ).map(
+      (item) =>
+        item.querySelector<HTMLElement>(":scope > .toc-item-body")?.dataset
+          .outline,
+    );
+
+    expect(relatedChildOutlines).toEqual(["1.1.1", "1.1.2"]);
+    expect(
+      document
+        .querySelector<HTMLElement>('.toc-item-body[data-outline="1.1.1"]')
+        ?.closest('[data-testid="list-style-toc-item-container"]')
+        ?.querySelector('.toc-item-body[data-outline="1.1.2"]'),
+    ).toBeNull();
+  });
+
   it("renders flat markup with observed Confluence separators", () => {
     renderToc(document, {
       ...OPTIONS,

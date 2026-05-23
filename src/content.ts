@@ -46,6 +46,12 @@ type HeadingCandidate = {
   text: string;
 };
 
+type ListStackItem = {
+  childList?: HTMLUListElement;
+  depth: number;
+  item: HTMLLIElement;
+};
+
 let scanTimer: number | undefined;
 let currentOptions = DEFAULT_RENDER_OPTIONS;
 
@@ -405,33 +411,31 @@ function getMacroParameters(options: RenderOptions): string {
 
 function createNestedList(entries: TocEntry[]): HTMLUListElement {
   const rootList = createLevelList();
-  const lists: HTMLUListElement[] = [rootList];
-  const lastItems: Array<HTMLLIElement | undefined> = [];
+  const stack: ListStackItem[] = [];
 
   for (const entry of entries) {
-    while (lists.length > entry.depth + 1) {
-      lists.pop();
-      lastItems.pop();
+    while (stack.length > 0 && stack[stack.length - 1].depth >= entry.depth) {
+      stack.pop();
     }
 
-    while (lists.length < entry.depth + 1) {
-      const parentItem = lastItems[lists.length - 1];
-
-      if (!parentItem) {
-        break;
-      }
-
-      const nestedList = createLevelList();
-      parentItem.append(nestedList);
-      lists.push(nestedList);
-    }
-
+    const parent = stack[stack.length - 1];
+    const list = parent ? getOrCreateChildList(parent) : rootList;
     const item = createListTocItem(entry);
-    lists[lists.length - 1].append(item);
-    lastItems[lists.length - 1] = item;
+    list.append(item);
+    stack.push({ depth: entry.depth, item });
   }
 
   return rootList;
+}
+
+function getOrCreateChildList(parent: ListStackItem): HTMLUListElement {
+  parent.childList ??= createLevelList();
+
+  if (!parent.childList.parentElement) {
+    parent.item.append(parent.childList);
+  }
+
+  return parent.childList;
 }
 
 function createLevelList(): HTMLUListElement {
