@@ -16,6 +16,9 @@ const PAGE_ROOT_SELECTORS = [
   '[data-testid="renderer-document"]',
   ".ak-renderer-document",
 ];
+const IGNORED_PAGE_ROOT_ANCESTOR_SELECTORS = [
+  ".ak-renderer-wrapper.is-comment",
+];
 
 const TITLE_SELECTOR = '[data-testid="title-text"]';
 
@@ -57,10 +60,15 @@ let currentOptions = DEFAULT_RENDER_OPTIONS;
 
 export function findPageRoot(root: ParentNode = document): HTMLElement | null {
   for (const selector of PAGE_ROOT_SELECTORS) {
-    const element = root.querySelector(selector);
+    const elements = root.querySelectorAll(selector);
 
-    if (element instanceof HTMLElement) {
-      return element;
+    for (const element of elements) {
+      if (
+        element instanceof HTMLElement &&
+        !isIgnoredPageRootCandidate(element)
+      ) {
+        return element;
+      }
     }
   }
 
@@ -545,6 +553,12 @@ function observeOptionChanges(): void {
 
 function getExistingToc(): HTMLElement | null {
   return document.querySelector<HTMLElement>(`[${ROOT_ATTR}]`);
+}
+
+function isIgnoredPageRootCandidate(element: HTMLElement): boolean {
+  return IGNORED_PAGE_ROOT_ANCESTOR_SELECTORS.some((selector) =>
+    Boolean(element.closest(selector)),
+  );
 }
 
 function isExtensionMutation(mutation: MutationRecord): boolean {

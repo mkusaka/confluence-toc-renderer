@@ -24,6 +24,20 @@ const SAMPLE_PAGE_HTML = `
   </main>
 `;
 
+const COMMENT_THEN_PAGE_HTML = `
+  <div class="ak-renderer-wrapper is-comment">
+    <div class="ak-renderer-document">
+      <p>Inline comment body</p>
+    </div>
+  </div>
+  <main>
+    <h1><span data-testid="title-text">Verification page</span></h1>
+    <div class="ak-renderer-document">
+      <h2>Page section</h2>
+    </div>
+  </main>
+`;
+
 const OPTIONS: RenderOptions = {
   ...DEFAULT_RENDER_OPTIONS,
   maxLevel: 4,
@@ -257,6 +271,28 @@ describe("renderToc", () => {
     renderToc(document, OPTIONS);
 
     expect(document.querySelector("[data-confluence-toc-renderer]")).toBeNull();
+  });
+
+  it("renders in the page body when an inline comment renderer appears first", () => {
+    document.body.innerHTML = COMMENT_THEN_PAGE_HTML;
+
+    renderToc(document, OPTIONS);
+
+    const commentRoot = document.querySelector<HTMLElement>(
+      ".ak-renderer-wrapper.is-comment .ak-renderer-document",
+    );
+    const pageRoot = document.querySelector<HTMLElement>(
+      "main > .ak-renderer-document",
+    );
+    const toc = document.querySelector<HTMLElement>(
+      "[data-confluence-toc-renderer]",
+    );
+
+    expect(
+      commentRoot?.querySelector("[data-confluence-toc-renderer]"),
+    ).toBeNull();
+    expect(pageRoot?.firstElementChild).toBe(toc);
+    expect(toc?.textContent).toContain("Page section");
   });
 });
 
