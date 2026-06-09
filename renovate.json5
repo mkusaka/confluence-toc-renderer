@@ -9,14 +9,16 @@
   customManagers: [
     {
       customType: "regex",
-      description: "Update the zizmor CLI version used by zizmor-action",
+      description: "Update tool versions pinned in workflow-lint.yml (actionlint, ghalint, pinact, zizmor)",
       managerFilePatterns: [
-        "/^\\.github/workflows/github-actions-lint\\.yml$/",
+        "/^\\.github/workflows/workflow-lint\\.yml$/",
       ],
       matchStrings: [
-        "version: (?<currentValue>v?\\d+\\.\\d+\\.\\d+) # renovate: depName=zizmorcore/zizmor",
+        // Env-var pins: datasource and depName come from the preceding comment.
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+\\w+?_VERSION: (?<currentValue>v?\\d+\\.\\d+\\.\\d+)",
+        // zizmor-action inline pin: depName from the trailing comment.
+        "version: (?<currentValue>v?\\d+\\.\\d+\\.\\d+) # renovate: depName=(?<depName>\\S+)",
       ],
-      depNameTemplate: "zizmorcore/zizmor",
       datasourceTemplate: "github-releases",
       versioningTemplate: "semver",
     },
